@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MQTT Light Control</title>
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <link href="styles.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>MQTT Light Control</h1>
+        <div class="light-status">
+            <span id="light-icon">💡</span>
+            <p id="status-text">Light is OFF</p>
+        </div>
+        <div class="button-group">
+            <button id="onButton" class="on-btn">Turn ON</button>
+            <button id="offButton" class="off-btn">Turn OFF</button>
+        </div>
+    </div>
+    <script >
+        const broker = 'wss://test.mosquitto.org:8081/mqtt';  // Switch to Mosquitto WebSocket broker
+const topic = '/student_group/light_control';
+
+const client = mqtt.connect(broker);
+const statusText = document.getElementById('status-text');
+const lightIcon = document.getElementById('light-icon');
+
+client.on('connect', function () {
+    console.log('✅ Connected to MQTT broker');
+    client.subscribe(topic);
+});
+
+client.on('error', function (err) {
+    console.error('❌ Connection error: ', err);
+    client.end();
+});
+
+client.on('close', function () {
+    console.warn('⚠️ Connection closed. Reconnecting...');
+    reconnect();
+});
+
+client.on('message', function (topic, message) {
+    const status = message.toString();
+    console.log(`📩 Message received: ${status}`);
+    
+    if (status === 'ON') {
+        statusText.textContent = "Light is ON";
+        lightIcon.textContent = "💡";
+    } else if (status === 'OFF') {
+        statusText.textContent = "Light is OFF";
+        lightIcon.textContent = "⚫";
+    }
+});
+
+function publishMessage(command) {
+    if (client.connected) {
+        client.publish(topic, command);
+        console.log(`📤 Published: ${command}`);
+    } else {
+        console.error('⚠️ Cannot publish, WebSocket is closed.');
+        reconnect();
+    }
+}
+
+function reconnect() {
+    setTimeout(() => {
+        console.log('🔄 Attempting to reconnect...');
+        client.reconnect();
+    }, 3000);
+}
+
+document.getElementById('onButton').addEventListener('click', () => {
+    publishMessage('ON');
+});
+
+document.getElementById('offButton').addEventListener('click', () => {
+    publishMessage('OFF');
+});
+
+    </script>
+</body>
+</html>
