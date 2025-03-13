@@ -60,7 +60,53 @@ The server will start at `http://localhost:5000`.
 5. **Any MQTT subscriber** (like a light controller) receives the message and toggles the light.
 
 ---
+MQTT Light Control
+This project implements a simple MQTT-based light control system using Python and HTML. The Python script listens for messages from an MQTT broker and updates the light status accordingly.
 
+📌 Features
+Python-based MQTT client that subscribes to light control messages.
+HTML front-end to provide a simple UI (but no JavaScript logic).
+Uses MQTT protocol for real-time communication.
+Supports turning the light ON or OFF using MQTT messages.
+📂 Project Structure
+bash
+Copy
+Edit
+/mqtt-light-control
+│── index.html        # Front-end UI (No JavaScript)
+│── light_control.py  # Python MQTT subscriber & handler
+└── README.md         # Documentation
+⚙️ Requirements
+Ensure you have Python 3.x installed along with the required package:
+
+sh
+Copy
+Edit
+pip install paho-mqtt
+🚀 How to Run
+Start the Python MQTT client:
+
+sh
+Copy
+Edit
+python light_control.py
+This will connect to the MQTT broker and listen for messages.
+
+Send MQTT messages to control the light:
+
+Use an external MQTT client (e.g., MQTT Explorer, mosquitto_pub) to publish messages to the topic:
+
+sh
+Copy
+Edit
+mosquitto_pub -h broker.hivemq.com -t "/student_group/light_control" -m "ON"
+mosquitto_pub -h broker.hivemq.com -t "/student_group/light_control" -m "OFF"
+View the HTML page (index.html) in a browser. (Note: Since JavaScript is removed, the UI will not update automatically.)
+
+🔧 Future Improvements
+Add a Python web server (e.g., Flask) to serve dynamic updates.
+Implement an embedded display or physical LED control.
+Use a local MQTT broker for better reliability.
 ## 📝 Notes
 - You can change the MQTT broker in `mqtt_light_control.py`.
 - This project uses **HiveMQ public broker** (free).
